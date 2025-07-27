@@ -8,16 +8,18 @@ from .sub_agents import places_agent
 
 
 class CoordinatorAgent(LlmAgent):
-    """Google Maps API와 상호작용하는 여러 하위 에이전트들의 작업을 조율하는 최상위 에이전트.
+    """Google Maps API 멀티에이전트 시스템의 최상위 조율 에이전트
 
-    이 에이전트는 사용자의 자연어 입력을 받아 의도를 파악한 후, '장소 검색',
-    '경로 찾기' 등 특정 작업을 수행할 수 있는 가장 적절한 하위 에이전트에게 제어권을
-    넘기는 라우터(Router) 역할을 수행합니다.
+    사용자의 자연어 요청을 분석하여 의도를 파악하고, 각 작업에 특화된
+    하위 에이전트들에게 적절히 작업을 분배하는 라우터 역할을 수행합니다.
 
-    주요 책임:
-      - 사용자 요청의 의도 분석 및 분류
-      - 적절한 하위 에이전트 또는 도구로의 작업 위임
-      - 전체 대화 흐름 관리
+    Attributes:
+        name (str): 에이전트 이름
+        model (Gemini): 사용하는 언어 모델 인스턴스
+        description (str): 에이전트의 역할 설명
+        instruction (str): 조율 작업을 위한 특화 지시사항
+        global_instruction (str): 모든 에이전트 공통 지시사항
+        generate_content_config (dict): 콘텐츠 생성 관련 설정값
     """
 
 

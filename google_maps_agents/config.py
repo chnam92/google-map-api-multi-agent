@@ -11,6 +11,7 @@ from google.genai import types
 # Ref: https://ai.google.dev/gemini-api/docs/models
 
 COORDINATOR_MODEL_NAME = "gemini-2.5-flash-lite"
+FIELDS_SELECTOR_MODEL_NAME = "gemini-2.5-flash-lite"
 PLACES_MODEL_NAME = "gemini-2.5-flash"
 
 

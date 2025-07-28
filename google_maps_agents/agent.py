@@ -1,10 +1,9 @@
 from google.adk.agents import LlmAgent
 from google.adk.models.google_llm import Gemini
 
-from config import COORDINATOR_CONTENT_CONFIG, COORDINATOR_MODEL_NAME
-
-from prompts import COORDINATOR_INSTRUCTION, GLOBAL_INSTRUCTION
-from .sub_agents import places_agent
+from .config import COORDINATOR_CONTENT_CONFIG, COORDINATOR_MODEL_NAME
+from .prompts import COORDINATOR_INSTRUCTION, GLOBAL_INSTRUCTION
+from .sub_agents.places_agent import places_sequential_agent
 
 
 class CoordinatorAgent(LlmAgent):
@@ -32,6 +31,6 @@ root_agent: CoordinatorAgent = CoordinatorAgent(
     instruction=COORDINATOR_INSTRUCTION,
     global_instruction=GLOBAL_INSTRUCTION,
     generate_content_config=COORDINATOR_CONTENT_CONFIG,
-    sub_agents=[places_agent],
+    sub_agents=[places_sequential_agent],
     disallow_transfer_to_parent=True,  # 최상위 에이전트이므로 부모로 제어를 넘기지 않습니다.
 )

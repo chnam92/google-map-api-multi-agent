@@ -548,11 +548,27 @@ wheels = [
 ]
 
 [[package]]
+name = "google-geo-type"
+version = "0.3.13"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-api-core", extra = ["grpc"] },
+    { name = "google-auth" },
+    { name = "proto-plus" },
+    { name = "protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3e/eb/6aa9709b099c7eb91c1844bf3b2b1b4e4ee733060572b528c08535921f7a/google_geo_type-0.3.13.tar.gz", hash = "sha256:b53e23282bedec7ee996f48b199506e33a3257eb59dc1506c7e7e8307b2567ee", size = 13909, upload-time = "2025-06-12T00:46:46.164Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/66/a3/97143771c10f4c222638664194a4a30a7012109201ce86cf81ed17165359/google_geo_type-0.3.13-py3-none-any.whl", hash = "sha256:e325c41d937c7423fd009ad7dd7ab507d5ad8574e87e67a18be01c1ecf723b97", size = 12680, upload-time = "2025-06-12T00:46:45.271Z" },
+]
+
+[[package]]
 name = "google-map-api-multi-agent"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "google-adk" },
+    { name = "google-maps-places" },
 ]
 
 [package.dev-dependencies]
@@ -563,13 +579,32 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "google-adk", specifier = ">=1.8.0" }]
+requires-dist = [
+    { name = "google-adk", specifier = ">=1.8.0" },
+    { name = "google-maps-places", specifier = ">=0.2.2" },
+]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "black", specifier = ">=25.1.0" },
     { name = "isort", specifier = ">=6.0.1" },
     { name = "pyright", specifier = ">=1.1.403" },
+]
+
+[[package]]
+name = "google-maps-places"
+version = "0.2.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-api-core", extra = ["grpc"] },
+    { name = "google-auth" },
+    { name = "google-geo-type" },
+    { name = "proto-plus" },
+    { name = "protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7d/39/a6d43b40ab4cc8714a7eccfa5a355b87ca5f75c6055612be5fc6f31969cc/google_maps_places-0.2.2.tar.gz", hash = "sha256:71576345eac348390f13dc1451ab6301fc9f9d9896a366bea544c374944ec8b0", size = 85645, upload-time = "2025-07-02T15:24:43.805Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/38/e0/b80a57936513231bb85081ee622c12154549995aad429393f685d2c70814/google_maps_places-0.2.2-py3-none-any.whl", hash = "sha256:0ff6c9a9884edeba50bc388bd2ae38280fedddc25cb86f3c6196fdbfebc69e88", size = 95957, upload-time = "2025-07-02T15:24:26.04Z" },
 ]
 
 [[package]]

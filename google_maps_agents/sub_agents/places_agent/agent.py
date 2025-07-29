@@ -1,16 +1,10 @@
 from google.adk.agents import LlmAgent, SequentialAgent
 from google.adk.models.google_llm import Gemini
 
-from ...config import (
-    FIELDS_SELECTOR_MODEL_NAME,
-    PLACES_CONTENT_CONFIG,
-    PLACES_MODEL_NAME,
-)
-from ...prompts import (
-    FIELDS_SELECTOR_INSTRUCTION,
-    GLOBAL_INSTRUCTION,
-    PLACES_INSTRUCTION,
-)
+from ...config import (FIELDS_SELECTOR_MODEL_NAME, PLACES_CONTENT_CONFIG,
+                       PLACES_MODEL_NAME)
+from ...prompts import (FIELDS_SELECTOR_INSTRUCTION, GLOBAL_INSTRUCTION,
+                        PLACES_INSTRUCTION)
 from ...tools.places import text_search_tool
 
 

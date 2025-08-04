@@ -12,6 +12,7 @@ from google.genai import types
 
 COORDINATOR_MODEL_NAME = "gemini-2.5-flash-lite"
 FIELDS_SELECTOR_MODEL_NAME = "gemini-2.5-flash-lite"
+PARAMETERS_SELECTOR_MODEL_NAME = "gemini-2.5-flash-lite"
 PLACES_MODEL_NAME = "gemini-2.5-flash"
 
 

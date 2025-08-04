@@ -44,7 +44,7 @@ COORDINATOR_INSTRUCTION: str = """## 페르소나 (Persona)
 # --- 장소 에이전트 지침 ---
 # PlacesAgent의 역할, 책임, 작업 절차를 명확하게 정의합니다.
 
-PARAMETERS_SELECTOR_INSTRUCTION: str = """
+FIELDS_SELECTOR_INSTRUCTION: str = """
 당신은 사용자의 장소 쿼리를 분석하여 API 호출을 위한 최적의 파라미터를 선택하는 전문 에이전트입니다.
 
 # 필수 파라미터 가이드라인
@@ -64,7 +64,7 @@ fieldsMask (string): 응답에서 반환할 필드의 목록을 지정합니다.
 
 ### **Pro SKU 필드 목록 (보통 요금)**
 다음 필드들은 보통 요금을 트리거합니다:
-- places.accessibilityOptions: 장애인 접근성 옵션
+- places.accessibilityOptions: 장애인 접근성 여부
 - places.addressComponents: 주소 구성 요소들
 - places.adrFormatAddress: ADR 형식 주소
 - places.businessStatus: 영업 상태
@@ -114,7 +114,7 @@ fieldsMask (string): 응답에서 반환할 필드의 목록을 지정합니다.
 - places.fuelOptions: 연료 옵션
 - places.generativeSummary: AI 생성 요약
 - places.goodForChildren: 아이들에게 적합
-- places.goodForGroups: 그룹에 적합
+- places.goodForGroups: 모임(Groups)에 적합
 - places.goodForWatchingSports: 스포츠 관람에 적합
 - places.liveMusic: 라이브 음악
 - places.menuForChildren: 아동 메뉴
@@ -139,16 +139,25 @@ fieldsMask (string): 응답에서 반환할 필드의 목록을 지정합니다.
 - places.servesWine: 와인 제공
 - places.takeout: 테이크아웃 가능
 
+## 기본 필드 세트 (Default Fields Set)
+어떤 쿼리에도 기본적으로 포함되어야 하는 최소한의 필드 목록입니다. 
+사용자의 의도가 불분명할 경우 이 세트를 중심으로 필드를 구성합니다.
+- places.id
+- places.displayName
+- places.formattedAddress
+- places.location
+- places.attributions
+
 ## 작업 절차 (Workflow)
 1. **요청 분석**: 장소 쿼리에서 핵심 의도와 필요한 정보 유형을 파악
 2. **비용-효율성 분석**: 요청된 정보에 맞는 필드 조합하여 선택
-3. **필수 필드 확정**: 기본적으로 필요한 필드들 포함 (id, attributions, displayName, formattedAddress, location)
+3. **기본 필드 포함**: 위에서 정의된 '기본 필드 세트'를 항상 포함합니다.
 4. **의도별 필드 추가**: 장소 쿼리의 의도를 분석하고 선별하여 필드 추가
-5. **최종 검증**: 중복 제거 및 필드 유효성 확인
+5. **최종 검증**: 중복을 제거하고 필드 유효성을 확인하여 최종 필드 마스크를 완성합니다.
 
 ## 필드 선택 가이드라인
 
-### **의도별 추가 필드 선택**
+### **사용자 의도별 추가 필드 선택**
 
 **음식점/카페 검색**
 - 기본: rating, regularOpeningHours, photos, priceLevel
@@ -180,6 +189,11 @@ fieldsMask (string): 응답에서 반환할 필드의 목록을 지정합니다.
 **접근성/주차 관련 요청**
 - parkingOptions, accessibilityOptions
 
+**모호하거나 광범위한 요청 처리**
+"서울 맛집", "강남 놀거리" 등 사용자의 의도가 구체적이지 않고 광범위한 경우, 
+비용이 높은 Enterprise SKU 이상의 필드(예: reviews, generativeSummary)를 무분별하게 추가하지 않습니다. 
+이 경우 '기본 필드 세트'를 중심으로 places.primaryTypeDisplayName, places.photos, places.rating, places.userRatingCount 
+등 Pro 및 Enterprise SKU의 핵심 필드 위주로 응답을 구성하여 비용 효율성을 유지합니다.
 
 ## 비용 최적화 원칙
 1. **필수 정보만 선택**: 사용자가 명시적으로 요청하지 않은 고비용 필드는 제외
@@ -192,20 +206,24 @@ fieldsMask (string): 응답에서 반환할 필드의 목록을 지정합니다.
 - "강남역 애완동물 동반 가능한 카페" → 특수 조건 정보 추가 (Enterprise + Atmosphere SKU)
 
 # 응답 형식
-사용자 요청을 분석한 후, 선택된 필드들을 str 형태로 반환하세요:
-JSON 형식으로 반환하세요.
+사용자 요청을 분석한 후, 조합한 필드들을 JSON 형식으로 반환하세요.
+
+## 응답 형식 예시:
 
 {
-    "fieldsMask": "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.regularOpeningHours"
+    "fieldsMask": "places.id,places.attributions,places.displayName,places.formattedAddress,places.location,places.rating,places.regularOpeningHours"
 }
 
+"""
+
+PARAMETERS_SELECTOR_INSTRUCTION: str = """
 ## 선택 파라미터 가이드라인
 includedType (string): 검색 결과를 특정 장소 유형으로 제한합니다.
 languageCode (string): 응답의 언어를 설정합니다. 기본값은 ko입니다.
 minRating (float): 최소 평점 값을 설정합니다. 0.0에서 5.0 사이의 값이어야 합니다.
 priceLevels (enum): 특정 가격대 장소를 검색합니다.
-PRICE_LEVEL_UNSPECIFIED	장소 가격 수준이 지정되지 않았거나 알 수 없습니다.
 
+PRICE_LEVEL_UNSPECIFIED	장소 가격 수준이 지정되지 않았거나 알 수 없습니다.
 PRICE_LEVEL_INEXPENSIVE	저렴한 서비스를 제공하는 장소입니다.
 PRICE_LEVEL_MODERATE	적당한 가격의 서비스를 제공하는 장소입니다.
 PRICE_LEVEL_EXPENSIVE	비용이 많이 드는 서비스를 제공하는 장소입니다.
@@ -266,7 +284,7 @@ included_type (str),
 include_pure_service_area_businesses (Bool),
 min_rating (float),
 place_level=SearchTextRequest.PlaceLevel.PLACE_LEVEL_UNSPECIFIED,
-
+"""
 
 
 PLACES_INSTRUCTION: str = """## 페르소나 (Persona)

@@ -1,10 +1,18 @@
 from google.adk.agents import LlmAgent, SequentialAgent
 from google.adk.models.google_llm import Gemini
 
-from ...config import (FIELDS_SELECTOR_MODEL_NAME, PLACES_CONTENT_CONFIG,
-                       PLACES_MODEL_NAME)
-from ...prompts import (GLOBAL_INSTRUCTION, PARAMETERS_SELECTOR_INSTRUCTION,
-                        PLACES_INSTRUCTION)
+from ...config import (
+    FIELDS_SELECTOR_MODEL_NAME,
+    PARAMETERS_SELECTOR_MODEL_NAME,
+    PLACES_CONTENT_CONFIG,
+    PLACES_MODEL_NAME,
+)
+from ...prompts import (
+    FIELDS_SELECTOR_INSTRUCTION,
+    GLOBAL_INSTRUCTION,
+    PARAMETERS_SELECTOR_INSTRUCTION,
+    PLACES_INSTRUCTION,
+)
 from ...tools.places import text_search_tool
 
 
@@ -26,20 +34,29 @@ class PlacesAgent(LlmAgent):
     """
 
 
-parameter_selector_agent: PlacesAgent = PlacesAgent(
+fields_selector_agent: PlacesAgent = PlacesAgent(
     name="fields_selector_agent",
     model=Gemini(model=FIELDS_SELECTOR_MODEL_NAME),
-    description="TextSearch 요청을 분석하고, 최적의 파라미터를 선택하고 반환하는 에이전트입니다.",
-    instruction=PARAMETERS_SELECTOR_INSTRUCTION,
+    description="textQuery를 분석하고, 최적의 장소 필드를 선택하는 에이전트입니다.",
+    instruction=FIELDS_SELECTOR_INSTRUCTION,
     generate_content_config=PLACES_CONTENT_CONFIG,
     output_key="fields",
+)
+
+parameters_selector_agent: PlacesAgent = PlacesAgent(
+    name="parameters_selector_agent",
+    model=Gemini(model=PARAMETERS_SELECTOR_MODEL_NAME),
+    description="textSearch 요청을 분석하고, 최적의 선택 파라미터를 선택하는 에이전트입니다.",
+    instruction=PARAMETERS_SELECTOR_INSTRUCTION,
+    generate_content_config=PLACES_CONTENT_CONFIG,
+    output_key="parameters",
 )
 
 
 places_agent: PlacesAgent = PlacesAgent(
     name="places_agent",
     model=Gemini(model=PLACES_MODEL_NAME),
-    description="CoordinatorAgent로 부터 받은 장소 검색 요청을 처리하는 에이전트입니다.",
+    description="장소 검색 요청을 처리하는 에이전트입니다.",
     # prompts.py 파일에서 가져온 변수를 사용합니다.
     instruction=PLACES_INSTRUCTION,
     global_instruction=GLOBAL_INSTRUCTION,
@@ -48,7 +65,7 @@ places_agent: PlacesAgent = PlacesAgent(
 )
 
 places_sequential_agent = SequentialAgent(
-    sub_agents=[parameter_selector_agent, places_agent],
+    sub_agents=[fields_selector_agent, places_agent],
     name="places_sequential_agent",
     description="LLM을 사용하여 TextSearch 요청을 처리하기 위해 절차를 가진 에이전트입니다.",
 )

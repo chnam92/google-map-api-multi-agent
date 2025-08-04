@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 class PlacesService:
     """포괄적인 기능을 제공하는 Google Maps Places API 래퍼 클래스 (Google Cloud Client 사용)."""
 
-    def __init__(self, language_code: str = "ko", region_code: str = "KR", timeout: float = 15.0):
+    def __init__(
+        self, language_code: str = "ko", region_code: str = "KR", timeout: float = 15.0
+    ):
         """Google Cloud Client를 사용한 PlacesService 초기화."""
         self.api_key: str = os.getenv("GOOGLE_PLACES_API_KEY")
         self.language_code: str = language_code
@@ -52,8 +54,7 @@ class PlacesService:
         """
         try:
             logger.info(f"장소 검색 요청 (Cloud Client): {query}")
-            
-            
+
             # SearchTextRequest 생성
             request = SearchTextRequest(
                 text_query=query,

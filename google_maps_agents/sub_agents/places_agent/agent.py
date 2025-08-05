@@ -3,15 +3,17 @@ from google.adk.models.google_llm import Gemini
 
 from ...config import (
     FIELDS_SELECTOR_MODEL_NAME,
-    PARAMETERS_SELECTOR_MODEL_NAME,
+    TYPES_SELECTOR_MODEL_NAME,
     PLACES_CONTENT_CONFIG,
     PLACES_MODEL_NAME,
+    LANGUAGE_SELECTOR_MODEL_NAME,
 )
 from ...prompts import (
     FIELDS_SELECTOR_INSTRUCTION,
     GLOBAL_INSTRUCTION,
-    PARAMETERS_SELECTOR_INSTRUCTION,
+    TYPES_SELECTOR_INSTRUCTION,
     PLACES_INSTRUCTION,
+    LANGUAGE_SELECTOR_INSTRUCTION,
 )
 from ...tools.places import text_search_tool
 
@@ -43,15 +45,23 @@ fields_selector_agent: PlacesAgent = PlacesAgent(
     output_key="fields",
 )
 
-parameters_selector_agent: PlacesAgent = PlacesAgent(
-    name="parameters_selector_agent",
-    model=Gemini(model=PARAMETERS_SELECTOR_MODEL_NAME),
+types_selector_agent: PlacesAgent = PlacesAgent(
+    name="types_selector_agent",
+    model=Gemini(model=TYPES_SELECTOR_MODEL_NAME),
     description="textSearch 요청을 분석하고, 최적의 선택 파라미터를 선택하는 에이전트입니다.",
-    instruction=PARAMETERS_SELECTOR_INSTRUCTION,
+    instruction=TYPES_SELECTOR_INSTRUCTION,
     generate_content_config=PLACES_CONTENT_CONFIG,
-    output_key="parameters",
+    output_key="types",
 )
 
+language_selector_agent: PlacesAgent = PlacesAgent(
+    name="language_selector_agent",
+    model=Gemini(model=LANGUAGE_SELECTOR_MODEL_NAME),
+    description="textSearch 요청을 분석하고, 최적의 언어를 선택하는 에이전트입니다.",
+    instruction=LANGUAGE_SELECTOR_INSTRUCTION,
+    generate_content_config=PLACES_CONTENT_CONFIG,
+    output_key="language",
+)
 
 places_agent: PlacesAgent = PlacesAgent(
     name="places_agent",
@@ -65,7 +75,7 @@ places_agent: PlacesAgent = PlacesAgent(
 )
 
 places_sequential_agent = SequentialAgent(
-    sub_agents=[fields_selector_agent, places_agent],
+    sub_agents=[fields_selector_agent, types_selector_agent, language_selector_agent, places_agent],
     name="places_sequential_agent",
     description="LLM을 사용하여 TextSearch 요청을 처리하기 위해 절차를 가진 에이전트입니다.",
 )

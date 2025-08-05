@@ -14,7 +14,7 @@ from google.api_core.exceptions import (
     ResourceExhausted,
 )
 from google.maps import places_v1
-from google.maps.places_v1.types import Place, SearchTextRequest, PriceLevel
+from google.maps.places_v1.types import Place, PriceLevel, SearchTextRequest
 
 # 로거 설정
 logger = logging.getLogger(__name__)
@@ -24,12 +24,10 @@ class PlacesService:
     """포괄적인 기능을 제공하는 Google Maps Places API 래퍼 클래스 (Google Cloud Client 사용)."""
 
     def __init__(
-        self, language_code: str = "ko", region_code: str = "KR", timeout: float = 15.0
+        self, timeout: float = 15.0
     ):
         """Google Cloud Client를 사용한 PlacesService 초기화."""
         self.api_key: str = os.getenv("GOOGLE_PLACES_API_KEY")
-        self.language_code: str = language_code
-        self.region_code: str = region_code
         self.timeout: float = timeout
 
         if not self.api_key:
@@ -45,7 +43,7 @@ class PlacesService:
         # Places 클라이언트 초기화
         self.client = places_v1.PlacesAsyncClient(client_options=options)
 
-    async def text_search(self, query: str, fields: str) -> Place:
+    async def text_search(self, query: str, fields: str, types: str, language_code: str) -> Place:
         """
         텍스트 쿼리를 사용하여 장소를 검색합니다.
 
@@ -62,9 +60,8 @@ class PlacesService:
             # SearchTextRequest 생성
             request = SearchTextRequest(
                 text_query=query,
-                language_code=self.language_code,
-                region_code=self.region_code,
-                included_type="",
+                language_code=language_code,
+                included_type=types,
                 min_rating=0.0,
                 price_levels=[PriceLevel.PRICE_LEVEL_UNSPECIFIED],
                 rank_preference=SearchTextRequest.RankPreference.RELEVANCE,
@@ -72,6 +69,7 @@ class PlacesService:
             )
 
             # Field mask를 메타데이터로 전달
+
             fieldMask: str = fields
 
             # API 호출
@@ -124,9 +122,11 @@ class PlacesService:
 places_service = PlacesService()
 
 
-async def text_search_tool(query: str, tool_context: ToolContext) -> Dict[str, Any]:
+async def text_search_tool(
+    query: str, tool_context: ToolContext
+) -> Dict[str, Any]:
     """
-    텍스트 쿼리로 장소를 검색하는 도구 (Google Cloud Client 사용)
+    텍스트 쿼리로 장소를 검색하는 도구
 
     Args:
         query: 검색할 장소 쿼리
@@ -134,17 +134,19 @@ async def text_search_tool(query: str, tool_context: ToolContext) -> Dict[str, A
     Returns:
         검색된 장소 정보
     """
-    fields_data = tool_context.state.get("fields", "")
+    llm_fields_data = tool_context.state.get("fields", None)
+    logger.info(f"llm_fields_data: {llm_fields_data}")
+    llm_types_data = tool_context.state.get("types", "")
+    logger.info(f"llm_types_data: {llm_types_data}")
+    llm_language_code_data = tool_context.state.get("language", "")
+    logger.info(f"llm_language_code_data: {llm_language_code_data}")
 
-    # fields_data가 딕셔너리 형태인 경우 파싱
-    if isinstance(fields_data, dict) and "fieldsMask" in fields_data:
-        fields_list = fields_data["fieldsMask"]
-    elif isinstance(fields_data, str):
-        fields_list = fields_data
-    else:
-        fields_list = ""
+    if llm_fields_data is None:
+        llm_fields_data = "places.id,places.attributions,places.displayName,places.formattedAddress,places.location"
 
-    result = await places_service.text_search(query=query, fields=fields_list)
+    result = await places_service.text_search(
+        query=query, fields=llm_fields_data, types=llm_types_data, language_code=llm_language_code_data
+    )
 
     # 상태에 저장
     if "places_search_history" not in tool_context.state:

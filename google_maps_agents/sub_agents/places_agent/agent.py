@@ -1,20 +1,12 @@
 from google.adk.agents import LlmAgent, SequentialAgent
 from google.adk.models.google_llm import Gemini
 
-from ...config import (
-    FIELDS_SELECTOR_MODEL_NAME,
-    TYPES_SELECTOR_MODEL_NAME,
-    PLACES_CONTENT_CONFIG,
-    PLACES_MODEL_NAME,
-    LANGUAGE_SELECTOR_MODEL_NAME,
-)
-from ...prompts import (
-    FIELDS_SELECTOR_INSTRUCTION,
-    GLOBAL_INSTRUCTION,
-    TYPES_SELECTOR_INSTRUCTION,
-    PLACES_INSTRUCTION,
-    LANGUAGE_SELECTOR_INSTRUCTION,
-)
+from ...config import (FIELDS_SELECTOR_MODEL_NAME,
+                       LANGUAGE_SELECTOR_MODEL_NAME, PLACES_CONTENT_CONFIG,
+                       PLACES_MODEL_NAME, TYPES_SELECTOR_MODEL_NAME)
+from ...prompts import (FIELDS_SELECTOR_INSTRUCTION, GLOBAL_INSTRUCTION,
+                        LANGUAGE_SELECTOR_INSTRUCTION, PLACES_INSTRUCTION,
+                        TYPES_SELECTOR_INSTRUCTION)
 from ...tools.places import text_search_tool
 
 
@@ -75,7 +67,12 @@ places_agent: PlacesAgent = PlacesAgent(
 )
 
 places_sequential_agent = SequentialAgent(
-    sub_agents=[fields_selector_agent, types_selector_agent, language_selector_agent, places_agent],
+    sub_agents=[
+        fields_selector_agent,
+        types_selector_agent,
+        language_selector_agent,
+        places_agent,
+    ],
     name="places_sequential_agent",
     description="LLM을 사용하여 TextSearch 요청을 처리하기 위해 절차를 가진 에이전트입니다.",
 )

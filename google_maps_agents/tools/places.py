@@ -58,8 +58,8 @@ class PlacesService:
 
         if not self.api_key:
             raise ValueError(
-                "Google Places API 키가 설정되지 않았습니다. "
-                "환경변수 'GOOGLE_PLACES_API_KEY'를 설정해주세요.\n"
+                "Google Places API 키가 설정되지 않았습니다."
+                "환경변수 'GOOGLE_PLACES_API_KEY'를 설정해주세요."
                 "예시: GOOGLE_PLACES_API_KEY=AIza..."
             )
 

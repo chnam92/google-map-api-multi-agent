@@ -3,10 +3,10 @@ from google.adk.models.google_llm import Gemini
 
 from ...config import (FIELDS_SELECTOR_MODEL_NAME,
                        LANGUAGE_SELECTOR_MODEL_NAME, PLACES_CONTENT_CONFIG,
-                       PLACES_MODEL_NAME, TYPES_SELECTOR_MODEL_NAME)
+                       PLACES_MODEL_NAME, TYPES_SELECTOR_MODEL_NAME, RATING_PRICING_SELECTOR_MODEL_NAME)
 from ...prompts import (FIELDS_SELECTOR_INSTRUCTION, GLOBAL_INSTRUCTION,
                         LANGUAGE_SELECTOR_INSTRUCTION, PLACES_INSTRUCTION,
-                        TYPES_SELECTOR_INSTRUCTION)
+                        TYPES_SELECTOR_INSTRUCTION, RATING_PRICING_SELECTOR_INSTRUCTION)
 from ...tools.places import text_search_tool
 
 
@@ -53,6 +53,15 @@ language_selector_agent: PlacesAgent = PlacesAgent(
     instruction=LANGUAGE_SELECTOR_INSTRUCTION,
     generate_content_config=PLACES_CONTENT_CONFIG,
     output_key="language",
+)
+
+rating_pricing_selector_agent: PlacesAgent = PlacesAgent(
+    name="rating_pricing_selector_agent",
+    model=Gemini(model=RATING_PRICING_SELECTOR_MODEL_NAME),
+    description="textSearch 요청을 분석하고, 최적의 평점 및 가격대를 선택하는 에이전트입니다.",
+    instruction=RATING_PRICING_SELECTOR_INSTRUCTION,
+    generate_content_config=PLACES_CONTENT_CONFIG,
+    output_key="rating_pricing",
 )
 
 places_agent: PlacesAgent = PlacesAgent(

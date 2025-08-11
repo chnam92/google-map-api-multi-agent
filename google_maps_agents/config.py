@@ -16,8 +16,7 @@ TYPES_SELECTOR_MODEL_NAME = "gemini-2.5-flash-lite"
 LANGUAGE_SELECTOR_MODEL_NAME = "gemini-2.5-flash-lite"
 RATING_PRICING_SELECTOR_MODEL_NAME = "gemini-2.5-flash"
 PLACES_MODEL_NAME = "gemini-2.5-flash"
-
-
+GEOCODE_MODEL_NAME = "gemini-2.5-flash-lite"
 
 # --- 생성 관련 설정 ---
 # 낮은 temperature 값은 모델의 응답을 더 일관성 있고 예측 가능하게 만듭니다.
@@ -26,5 +25,9 @@ COORDINATOR_CONTENT_CONFIG = types.GenerateContentConfig(
 )
 
 PLACES_CONTENT_CONFIG = types.GenerateContentConfig(
+    temperature=0.1,
+)
+
+GEOCODE_CONTENT_CONFIG = types.GenerateContentConfig(
     temperature=0.1,
 )

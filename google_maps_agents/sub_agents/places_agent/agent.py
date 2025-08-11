@@ -1,12 +1,17 @@
 from google.adk.agents import LlmAgent, SequentialAgent
 from google.adk.models.google_llm import Gemini
 
-from ...config import (FIELDS_SELECTOR_MODEL_NAME,
-                       LANGUAGE_SELECTOR_MODEL_NAME, PLACES_CONTENT_CONFIG,
-                       PLACES_MODEL_NAME, TYPES_SELECTOR_MODEL_NAME, RATING_PRICING_SELECTOR_MODEL_NAME)
-from ...prompts import (FIELDS_SELECTOR_INSTRUCTION, GLOBAL_INSTRUCTION,
-                        LANGUAGE_SELECTOR_INSTRUCTION, PLACES_INSTRUCTION,
-                        TYPES_SELECTOR_INSTRUCTION, RATING_PRICING_SELECTOR_INSTRUCTION)
+from ...config import (FIELDS_SELECTOR_MODEL_NAME, GEOCODE_CONTENT_CONFIG,
+                       GEOCODE_MODEL_NAME, LANGUAGE_SELECTOR_MODEL_NAME,
+                       PLACES_CONTENT_CONFIG, PLACES_MODEL_NAME,
+                       RATING_PRICING_SELECTOR_MODEL_NAME,
+                       TYPES_SELECTOR_MODEL_NAME)
+from ...prompts import (FIELDS_SELECTOR_INSTRUCTION, GEOCODE_INSTRUCTION,
+                        GLOBAL_INSTRUCTION, LANGUAGE_SELECTOR_INSTRUCTION,
+                        PLACES_INSTRUCTION,
+                        RATING_PRICING_SELECTOR_INSTRUCTION,
+                        TYPES_SELECTOR_INSTRUCTION)
+from ...tools.geocode import geocode_tool, reverse_geocode_tool
 from ...tools.places import text_search_tool
 
 
@@ -84,4 +89,32 @@ places_sequential_agent = SequentialAgent(
     ],
     name="places_sequential_agent",
     description="LLM을 사용하여 TextSearch 요청을 처리하기 위해 절차를 가진 에이전트입니다.",
+)
+
+
+class GeocodeAgent(LlmAgent):
+    """
+    CoordinatorAgent로부터 받은 지오코딩 요청을 처리하고,
+    Google Maps Geocoding API를 활용한 지오코딩 요청을 처리하는 에이전트입니다.
+    사용자가 요청한 주소를 좌표로 변환하거나, 좌표를 주소로 변환하는 역할을 담당합니다.
+
+    Attributes:
+    name (str): 에이전트 이름 ('geocode_agent')
+    model (Gemini): 사용하는 언어 모델
+    description (str): 에이전트 설명
+    instruction (str): 에이전트 지시사항
+    global_instruction (str): 전역 지시사항
+    generate_content_config (dict): 콘텐츠 생성 설정
+    """
+
+
+geocode_agent: GeocodeAgent = GeocodeAgent(
+    name="geocode_agent",
+    model=Gemini(model=GEOCODE_MODEL_NAME),
+    description="Geocoding 요청을 처리하는 에이전트입니다.",
+    # prompts.py 파일에서 가져온 변수를 사용합니다.
+    instruction=GEOCODE_INSTRUCTION,
+    global_instruction=GLOBAL_INSTRUCTION,
+    generate_content_config=GEOCODE_CONTENT_CONFIG,
+    tools=[geocode_tool, reverse_geocode_tool],
 )
